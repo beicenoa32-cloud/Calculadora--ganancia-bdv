@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velar App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f8fafc; font-family: sans-serif; }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-2xl font-bold text-blue-900 mb-6">Velar</h1>
+
+        <!-- Tarjeta Banco -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm mb-4">
+            <p class="text-gray-500 mb-2">Banco</p>
+            <div class="flex justify-between items-center mb-4">
+                <span class="font-bold">BDV Virtual</span>
+                <span class="text-2xl font-bold" id="montoDisplay">500.00</span>
+            </div>
+            <div class="grid grid-cols-4 gap-2">
+                <button onclick="updateAmount(300)" class="bg-gray-100 p-2 rounded-lg">300</button>
+                <button onclick="updateAmount(500)" class="bg-gray-100 p-2 rounded-lg">500</button>
+                <button onclick="updateAmount(1000)" class="bg-gray-100 p-2 rounded-lg">1000</button>
+                <button onclick="updateAmount(2000)" class="bg-gray-100 p-2 rounded-lg">2000</button>
+            </div>
+            <p class="mt-4 text-gray-400">Pagas: <span id="pagasDisplay">382,511.39</span> Bs</p>
+        </div>
+
+        <!-- Tarjeta Pasarela -->
+        <div class="bg-white p-6 rounded-3xl shadow-sm">
+            <p class="text-gray-500 mb-2">Pasarela</p>
+            <div class="flex justify-between items-center">
+                <span class="font-bold">Binance</span>
+                <span class="text-2xl font-bold" id="usdtDisplay">487.76</span>
+            </div>
+            <p class="mt-4 text-gray-400">Recibes: <span id="recibeDisplay">467.76</span> USDT + <span class="text-green-600 font-bold">+30.29 USDT</span></p>
+        </div>
+    </div>
+
+    <script>
+        function updateAmount(val) {
+            document.getElementById('montoDisplay').innerText = val.toFixed(2);
+            // Aquí puedes poner tu lógica de cálculo matemática real
+            document.getElementById('usdtDisplay').innerText = (val * 0.97).toFixed(2);
+        }
+    </script>
+</body>
+</html>
