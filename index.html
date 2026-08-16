@@ -48,4 +48,189 @@
         }
     </script>
 </body>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora P2P</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f8fafc; font-family: sans-serif; }
+        input, select { outline: none; }
+    </style>
+</head>
+<body class="p-4 pb-12">
+    <div class="max-w-md mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-blue-900">Calculadora</h1>
+        </div>
+
+        <!-- SECCIÓN DE CONFIGURACIÓN DE TASAS -->
+        <div class="bg-white p-5 rounded-3xl shadow-sm mb-4 border border-gray-100">
+            <h2 class="text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider">Tasas del Día</h2>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="text-xs text-gray-400">Intervención (Bs)</label>
+                    <input type="number" id="tasaIntervencion" value="36.50" class="w-full bg-gray-50 p-2 rounded-lg font-bold text-gray-700" oninput="calcular()">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400">Margen Ganancia (%)</label>
+                    <input type="number" id="porcentajeGanancia" value="5" class="w-full bg-gray-50 p-2 rounded-lg font-bold text-green-600" oninput="calcular()">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs text-gray-400">USDT Compra (Bs)</label>
+                    <input type="number" id="tasaCompra" value="40.00" class="w-full bg-gray-50 p-2 rounded-lg font-bold text-gray-700" oninput="calcular()">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400">USDT Venta (Bs)</label>
+                    <input type="number" id="tasaVenta" value="42.50" class="w-full bg-gray-50 p-2 rounded-lg font-bold text-gray-700" oninput="calcular()">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE COMISIONES EXTRA -->
+        <div class="bg-white p-5 rounded-3xl shadow-sm mb-4 border border-gray-100">
+            <h2 class="text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider">Comisiones Extra (%)</h2>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs text-gray-400">Comisión Tarjeta (%)</label>
+                    <input type="number" id="comisionTarjeta" value="0" class="w-full bg-gray-50 p-2 rounded-lg font-bold text-red-500" oninput="calcular()">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400">Comisión Bpay (%)</label>
+                    <input type="number" id="comisionBpay" value="0" class="w-full bg-gray-50 p-2 rounded-lg font-bold text-red-500" oninput="calcular()">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE OPERACIÓN -->
+        <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+            <h2 class="text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider">Operación</h2>
+            
+            <!-- Origen -->
+            <div class="mb-4">
+                <label class="text-xs text-gray-400">Envías desde (Origen)</label>
+                <select id="origen" class="w-full bg-gray-50 p-3 rounded-lg font-bold text-gray-700 mt-1" onchange="calcular()">
+                    <option value="bs">BDV Virtual</option>
+                    <option value="bs">Banco del Tesoro</option>
+                    <option value="usd">Zinli</option>
+                    <option value="usd">Wally</option>
+                    <option value="usd">Binance</option>
+                    <option value="usd">Bitget</option>
+                    <option value="usd">Kontigo</option>
+                </select>
+            </div>
+
+            <!-- Destino -->
+            <div class="mb-4">
+                <label class="text-xs text-gray-400">Recibes en (Destino)</label>
+                <select id="destino" class="w-full bg-gray-50 p-3 rounded-lg font-bold text-gray-700 mt-1" onchange="calcular()">
+                    <option value="usd">Binance</option>
+                    <option value="usd">Bitget</option>
+                    <option value="usd">Zinli</option>
+                    <option value="usd">Wally</option>
+                    <option value="usd">Kontigo</option>
+                    <option value="bs">BDV Virtual</option>
+                    <option value="bs">Banco del Tesoro</option>
+                </select>
+            </div>
+
+            <!-- Monto exacto -->
+            <div class="mb-6">
+                <label class="text-xs text-gray-400">Monto a cambiar</label>
+                <input type="number" id="montoCambio" placeholder="Ej. 100" class="w-full bg-blue-50 p-3 rounded-lg font-bold text-2xl text-blue-900 mt-1 text-center" oninput="calcular()">
+            </div>
+
+            <!-- Resultados Automáticos -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-gray-500">Monto a Entregar:</span>
+                    <span class="font-bold text-xl text-gray-800" id="resultadoMonto">0.00</span>
+                </div>
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs text-gray-400">Comisiones (Tarjeta + Bpay):</span>
+                    <span class="font-bold text-sm text-red-500" id="resultadoGastos">- 0.00</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-500 font-bold">Tu Ganancia Neta:</span>
+                    <span class="font-bold text-sm text-green-600" id="resultadoGanancia">+ 0.00</span>
+                </div>
+            </div>
+            
+            <p class="text-xs text-gray-400 text-center mt-4" id="resumenTexto">Ingresa un monto para ver el cálculo.</p>
+        </div>
+    </div>
+
+    <script>
+        function calcular() {
+            // Obtener valores de las tasas
+            let tIntervencion = parseFloat(document.getElementById('tasaIntervencion').value) || 0;
+            let tCompra = parseFloat(document.getElementById('tasaCompra').value) || 0;
+            let tVenta = parseFloat(document.getElementById('tasaVenta').value) || 0;
+            
+            // Obtener porcentajes
+            let margenGanancia = parseFloat(document.getElementById('porcentajeGanancia').value) || 0;
+            let pTarjeta = parseFloat(document.getElementById('comisionTarjeta').value) || 0;
+            let pBpay = parseFloat(document.getElementById('comisionBpay').value) || 0;
+            
+            // Obtener datos de la operación
+            let monto = parseFloat(document.getElementById('montoCambio').value) || 0;
+            let tipoOrigen = document.getElementById('origen').value; 
+            let tipoDestino = document.getElementById('destino').value; 
+
+            let montoBaseCalculado = 0;
+            let ganancia = 0;
+            let gastosComisiones = 0;
+            let resultadoFinal = 0;
+            let moneda = "";
+            let textoResumen = "";
+
+            if (monto > 0) {
+                // Calcular conversión base
+                if (tipoOrigen === 'bs' && tipoDestino === 'usd') {
+                    montoBaseCalculado = monto / tVenta;
+                    moneda = " USDT/USD";
+                    textoResumen = `El cliente paga ${monto} Bs.`;
+                } else if (tipoOrigen === 'usd' && tipoDestino === 'bs') {
+                    montoBaseCalculado = monto * tCompra;
+                    moneda = " Bs";
+                    textoResumen = `El cliente envía ${monto} USD.`;
+                } else {
+                    montoBaseCalculado = monto;
+                    moneda = (tipoOrigen === 'bs') ? " Bs" : " USDT/USD";
+                    textoResumen = `Cambio en misma moneda.`;
+                }
+
+                // Calcular porcentajes sobre el monto base convertido
+                ganancia = montoBaseCalculado * (margenGanancia / 100);
+                gastosComisiones = montoBaseCalculado * ((pTarjeta + pBpay) / 100);
+                
+                // El cliente recibe el monto menos tu ganancia y menos lo que cobran las pasarelas
+                resultadoFinal = montoBaseCalculado - ganancia - gastosComisiones;
+
+                // Mostrar en pantalla
+                document.getElementById('resultadoMonto').innerText = resultadoFinal.toFixed(2) + moneda;
+                document.getElementById('resultadoGastos').innerText = "- " + gastosComisiones.toFixed(2) + moneda;
+                document.getElementById('resultadoGanancia').innerText = "+ " + ganancia.toFixed(2) + moneda;
+                
+            } else {
+                document.getElementById('resultadoMonto').innerText = "0.00";
+                document.getElementById('resultadoGastos').innerText = "- 0.00";
+                document.getElementById('resultadoGanancia').innerText = "+ 0.00";
+                textoResumen = "Ingresa un monto para ver el cálculo.";
+            }
+
+            document.getElementById('resumenTexto').innerText = textoResumen;
+        }
+
+        calcular();
+    </script>
+</body>
 </html>
