@@ -3,86 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Velar</title>
+    <title>Calculadora Ciclo Velar</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-4">
     <div class="max-w-md mx-auto bg-white p-6 rounded-3xl shadow-lg">
-        <h1 class="text-xl font-bold text-gray-800 mb-4">Calculadora P2P</h1>
+        <h1 class="text-xl font-bold text-blue-900 mb-4">Ciclo de Operación</h1>
 
-        <!-- TASAS -->
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-                <label class="text-[10px] uppercase font-bold text-gray-400">Tasa Intervención</label>
-                <input type="number" id="tasaIntervencion" value="36.50" class="w-full p-2 bg-gray-50 rounded-lg font-bold" oninput="calcular()">
+        <div class="grid grid-cols-2 gap-3">
+            <div class="col-span-2">
+                <label class="text-[10px] uppercase font-bold text-gray-400">Monto Inicial ($)</label>
+                <input type="number" id="monto" value="100" class="w-full p-2 bg-blue-50 rounded-lg font-bold" oninput="calcular()">
             </div>
             <div>
-                <label class="text-[10px] uppercase font-bold text-gray-400">Tasa Venta USDT</label>
-                <input type="number" id="tasaVenta" value="42.50" class="w-full p-2 bg-blue-50 rounded-lg font-bold text-blue-700" oninput="calcular()">
+                <label class="text-[10px] uppercase font-bold text-gray-400">% Banco</label>
+                <input type="number" id="comisionBanco" value="2.5" class="w-full p-2 bg-gray-100 rounded-lg font-bold" oninput="calcular()">
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-gray-400">% Bpay</label>
+                <input type="number" id="comisionBpay" value="4.1" class="w-full p-2 bg-gray-100 rounded-lg font-bold" oninput="calcular()">
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-gray-400">Tasa Venta</label>
+                <input type="number" id="tasaVenta" value="870" class="w-full p-2 bg-gray-100 rounded-lg font-bold" oninput="calcular()">
+            </div>
+            <div>
+                <label class="text-[10px] uppercase font-bold text-gray-400">Tasa Oficial</label>
+                <input type="number" id="tasaOficial" value="776.40" class="w-full p-2 bg-gray-100 rounded-lg font-bold" oninput="calcular()">
             </div>
         </div>
 
-        <!-- BANCO Y COMISIÓN EXTRA -->
-        <div class="mb-4">
-            <label class="text-[10px] uppercase font-bold text-gray-400">Seleccionar Banco / Método</label>
-            <select id="metodo" class="w-full p-3 bg-gray-50 rounded-lg font-bold mb-3" onchange="calcular()">
-                <option value="2.5">BDV Virtual (2.5%)</option>
-                <option value="1.5">BDV Física (1.5%)</option>
-                <option value="2.5">Banco del Tesoro (2.5%)</option>
-                <option value="0">Zinli (0%)</option>
-                <option value="0">Wally (0%)</option>
-            </select>
-            
-            <label class="text-[10px] uppercase font-bold text-gray-400">Comisión Plataforma (%)</label>
-            <input type="number" id="comisionExtra" value="4.1" class="w-full p-2 bg-red-50 rounded-lg font-bold text-red-600" oninput="calcular()">
-        </div>
-
-        <!-- OPERACIÓN -->
-        <div class="mt-6 border-t pt-4">
-            <label class="text-[10px] uppercase font-bold text-gray-400">Monto en Bs</label>
-            <input type="number" id="montoBs" placeholder="0.00" class="w-full text-3xl font-bold p-4 text-center mt-2 bg-gray-50 rounded-2xl" oninput="calcular()">
-        </div>
-
-        <!-- RESULTADOS -->
-        <div class="mt-6 space-y-2">
-            <div class="flex justify-between text-gray-500">
-                <span>USDT Brutos:</span>
-                <span id="bruto" class="font-bold">0.00</span>
-            </div>
-            <div class="flex justify-between text-red-500">
-                <span>Comisión Total:</span>
-                <span id="totalComision" class="font-bold">0.00</span>
-            </div>
-            <div class="flex justify-between text-green-600 text-xl font-bold border-t pt-2 mt-2">
-                <span>Recibe Cliente:</span>
-                <span id="neto">0.00 USDT</span>
+        <div class="mt-6 bg-gray-50 p-4 rounded-2xl text-sm space-y-2">
+            <div class="flex justify-between"><span>Tras 1ra com (Banco):</span> <b id="paso1">0</b></div>
+            <div class="flex justify-between"><span>Tras 2da com (Bpay):</span> <b id="paso2">0</b></div>
+            <div class="flex justify-between border-t border-gray-300 pt-2"><span>Bolívares obtenidos:</span> <b id="bsObtenidos">0</b></div>
+            <div class="flex justify-between text-green-700 pt-4 border-t-2 border-green-200">
+                <span>**Resultado Final (Recompra):**</span> 
+                <b id="final" class="text-xl">0</b>
             </div>
         </div>
     </div>
 
     <script>
         function calcular() {
-            let tasaVenta = parseFloat(document.getElementById('tasaVenta').value) || 0;
-            let montoBs = parseFloat(document.getElementById('montoBs').value) || 0;
-            let comisionBanco = parseFloat(document.getElementById('metodo').value) || 0;
-            let comisionExtra = parseFloat(document.getElementById('comisionExtra').value) || 0;
+            let m = parseFloat(document.getElementById('monto').value) || 0;
+            let cb = parseFloat(document.getElementById('comisionBanco').value) || 0;
+            let cp = parseFloat(document.getElementById('comisionBpay').value) || 0;
+            let tv = parseFloat(document.getElementById('tasaVenta').value) || 0;
+            let to = parseFloat(document.getElementById('tasaOficial').value) || 0;
 
-            if(montoBs > 0 && tasaVenta > 0) {
-                // 1. Calculamos el bruto (Monto / Tasa)
-                let bruto = montoBs / tasaVenta;
-                
-                // 2. Sumamos los porcentajes (Comisión Banco + 4.1%)
-                let porcentajeTotal = comisionBanco + comisionExtra;
-                let valorComision = bruto * (porcentajeTotal / 100);
-                
-                // 3. Neto es bruto - comisión
-                let neto = bruto - valorComision;
+            let paso1 = m * (1 - (cb / 100));
+            let paso2 = paso1 * (1 - (cp / 100));
+            let bs = paso2 * tv;
+            let tasaConMargen = to * 1.005; // Suma el 0.5%
+            let final = bs / tasaConMargen;
 
-                document.getElementById('bruto').innerText = bruto.toFixed(2) + " USDT";
-                document.getElementById('totalComision').innerText = "-" + valorComision.toFixed(2) + " USDT (" + porcentajeTotal.toFixed(1) + "%)";
-                document.getElementById('neto').innerText = neto.toFixed(2) + " USDT";
-            }
+            document.getElementById('paso1').innerText = paso1.toFixed(2) + " $";
+            document.getElementById('paso2').innerText = paso2.toFixed(2) + " $";
+            document.getElementById('bsObtenidos').innerText = bs.toLocaleString() + " Bs";
+            document.getElementById('final').innerText = final.toFixed(2) + " $";
         }
+        calcular();
     </script>
 </body>
 </html>
